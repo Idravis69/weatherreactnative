@@ -8,10 +8,13 @@ import {
     ImageBackground,
 } from 'react-native';
 import axios from 'axios';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const ToDo = () => {
     const [city, setCity] = useState('Lyon');
     const [weather, setWeather] = useState(null);
+    const [time, setTime] = useState(new Date().toLocaleTimeString());
+
     const OPENWEATHER_API_KEY = '24e52e2a264859eafbd347c8dd05b12a';
 
     const handleWeatherClick = async () => {
@@ -27,15 +30,25 @@ const ToDo = () => {
 
     useEffect(() => {
         handleWeatherClick();
+
+        const intervalID = setInterval(() => {
+            setTime(new Date().toLocaleTimeString());
+        }, 1000);
+
+        return () => clearInterval(intervalID);
     }, [city]);
 
     return (
         <ImageBackground
             source={{
-                uri: 'https://i.pinimg.com/564x/06/94/b1/0694b1d20329a735180d724f5f94be89.jpg',
+                uri: 'https://img.freepik.com/photos-premium/belle-vue-ciel-bleu-nuages-au-lever-du-soleil-partiellement-nuageux-fond-nuage-ete-nuage-ete-nuage-ciel-clair-coucher-soleil-ciel-naturel-cinematographique-beau-fond-texture-jaune-blanc_620624-3180.jpg',
             }}
             style={styles.backgroundImage}>
+
             <KeyboardAvoidingView behavior="padding" style={styles.container}>
+                <View style={styles.timeContainer}>
+                    <Text style={styles.timeText}>{time}</Text>
+                </View>
                 <TextInput
                     style={styles.input}
                     value={city}
@@ -43,15 +56,18 @@ const ToDo = () => {
                     placeholder="Entrer le nom de la ville pour connaitre sa météo"
                 />
                 {weather && (
-                    <View style={[styles.weatherCard, { backgroundColor: 'white' }]}>
+                    <View style={[styles.weatherCard]}>
                         <Text style={[styles.weatherText, { color: 'black' }]}>
-
-                            {weather.weather[0].description}
+                            <Icon name='thermometer' size={20} color='#1E90FF' /> {Math.round(weather.main.temp - 273.15)}°C
                         </Text>
                         <Text style={[styles.weatherText, { color: 'black' }]}>
-                            {Math.round(weather.main.temp - 273.15)}°C
+                            <Icon name='tint' size={20} color='#1E90FF' /> {weather.main.humidity}%
+                        </Text>
+                        <Text style={[styles.weatherText, { color: 'black' }]}>
+                            <Icon name='wind' size={20} color='#1E90FF' /> {weather.wind.speed}m/s
                         </Text>
                     </View>
+
                 )}
             </KeyboardAvoidingView>
         </ImageBackground>
